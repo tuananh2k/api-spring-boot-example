@@ -14,8 +14,10 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
+    // thông báo Spring Boot hãy tự inject (tiêm) một instance của UserService
+    // vào thuộc tính này khi khởi tạo UserController
     @Autowired
     UserService userService;
 
@@ -32,7 +34,7 @@ public class UserController {
         return new ResponseEntity<>(data, HttpStatusCode.valueOf(400));
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<?> signUp(@RequestBody SignUpDTO signUpDTO) {
         int count = userService.countByEmail(signUpDTO.getEmail());
         if (count > 0) {
@@ -55,9 +57,30 @@ public class UserController {
         return new ResponseEntity<>(err, HttpStatusCode.valueOf(400));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable("id") Long userId) {
+        User user = userService.findById(userId);
+        return new ResponseEntity<>(user, HttpStatusCode.valueOf(200));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<User> putUser(@RequestBody SignUpDTO user, @PathVariable("id") Long userId) {
         User newUser = userService.editUser(user, userId);
         return new ResponseEntity<>(newUser, HttpStatusCode.valueOf(200));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long userId) {
+        int isSuccess = userService.deleteById(userId);
+        if (isSuccess == 1) {
+            Map<String, String> data = new HashMap<>();
+            data.put("status", "success");
+            data.put("message", "Delete user is success");
+            return new ResponseEntity<>(data, HttpStatusCode.valueOf(200));
+        }
+        Map<String, String> err = new HashMap<>();
+        err.put("status", "error");
+        err.put("message", "Delete user is failed");
+        return new ResponseEntity<>(err, HttpStatusCode.valueOf(400));
     }
 }

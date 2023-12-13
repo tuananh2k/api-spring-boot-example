@@ -1,20 +1,16 @@
 package com.example.helloword.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Entity
 @Table(name = "users")
 public class User {
 
-    @Id
     @JsonProperty(value = "id")
     @Column("id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @JsonProperty(value = "name")
